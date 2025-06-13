@@ -1,0 +1,19 @@
+version: "3.8"
+services:
+  backend:
+    build: ./backend
+    env_file:
+      - .env
+    volumes:
+      - ./backend/app.db:/app/app.db
+    ports:
+      - "8000:8000"
+    restart: unless-stopped
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "5173:80"
+    restart: unless-stopped
+    depends_on:
+      - backend

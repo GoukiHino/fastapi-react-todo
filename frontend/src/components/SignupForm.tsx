@@ -1,0 +1,61 @@
+import type {ChangeEvent, FormEvent} from "react";
+import {useState} from "react";
+import {Alert, Box, Button, TextField, Typography} from "@mui/material";
+import type {UserCreate} from "../api/user";
+import {signup} from "../api/user";
+
+const SignupForm = () => {
+    const [form, setForm] = useState<UserCreate>({username: "", password: ""});
+    const [error, setError] = useState<string | null>(null);
+
+    const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+        setForm({...form, [e.target.name]: e.target.value});
+    };
+
+    const handleSubmit = async (e: FormEvent) => {
+        e.preventDefault();
+        try {
+            await signup(form);
+            setForm({username: "", password: ""});
+        } catch (err: any) {
+            setError(err?.response?.data?.detail);
+            console.log(err)
+        }
+    };
+
+    return (
+        <Box component="form" onSubmit={handleSubmit} sx={{maxWidth: 320, mx: "auto"}}>
+            <Typography variant="h5" align="center" mb={3}>Signup</Typography>
+            <Box
+                sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: 3,
+                    p: 3,
+                    borderRadius: 1,
+                    boxShadow: 3
+                }}
+            >
+                <TextField
+                    name="username"
+                    label="Username"
+                    value={form.username}
+                    onChange={handleChange}
+                    required
+                />
+                <TextField
+                    name="password"
+                    type="password"
+                    label="Password"
+                    value={form.password}
+                    onChange={handleChange}
+                    required
+                />
+                <Button variant="contained" type="submit">Submit</Button>
+            </Box>
+            {error && <Alert severity="error" sx={{mt: 3}}>{error}</Alert>}
+        </Box>
+    );
+};
+
+export default SignupForm;
